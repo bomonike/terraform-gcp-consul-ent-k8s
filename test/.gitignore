@@ -1,0 +1,9 @@
+.terraform*
+*.tfvars
+*.tfstate
+backend*
+consul.*
+rootca.*
+terraform*
+
+!.terraform-version

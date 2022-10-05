@@ -1,0 +1,56 @@
+# Copyright © 2014-2022 HashiCorp, Inc.
+#
+# This Source Code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this project, you can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+global:
+  name: consul
+  image: "hashicorp/consul-enterprise:${consul_version}-ent"
+  enterpriseLicense:
+    secretName: 'consul-ent-license'
+    secretKey: 'key'
+    enableLicenseAutoload: true
+  datacenter: dc1
+  # TLS configures whether Consul components use TLS.
+  tls:
+    # TLS must be enabled for federation in Kubernetes.
+    enabled: true
+  federation:
+    enabled: true
+    # This will cause a Kubernetes secret to be created that
+    # can be imported by secondary datacenters to configure them
+    # for federation.
+    createFederationSecret: true
+  acls:
+    manageSystemACLs: true
+    # If ACLs are enabled, we must create a token for secondary
+    # datacenters to replicate ACLs.
+    createReplicationToken: true
+  # Gossip encryption secures the protocol Consul uses to quickly
+  # discover new nodes and detect failure.
+  gossipEncryption:
+    autoGenerate: true
+server:
+  enabled: true
+  replicas: ${server_replicas}
+
+client:
+  enabled: true
+
+connectInject:
+  # Consul Connect service mesh must be enabled for federation.
+  enabled: true
+
+controller:
+  enabled: true
+
+meshGateway:
+  # Mesh gateways are gateways between datacenters. They must be enabled
+  # for federation in Kubernetes since the communication between datacenters
+  # goes through the mesh gateways.
+  enabled: true
+  service:
+    enabled: true
+    type: LoadBalancer
+    annotations: |
+        networking.gke.io/load-balancer-type: "Internal"

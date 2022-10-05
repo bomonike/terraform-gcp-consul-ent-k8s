@@ -1,0 +1,58 @@
+# Copyright © 2014-2022 HashiCorp, Inc.
+#
+# This Source Code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this project, you can obtain one at http://mozilla.org/MPL/2.0/.
+#
+
+global:
+  name: consul
+  image: "hashicorp/consul-enterprise:${consul_version}-ent"
+  enterpriseLicense:
+    secretName: 'consul-ent-license'
+    secretKey: 'key'
+    enableLicenseAutoload: true
+  datacenter: dc2
+  tls:
+    enabled: true
+    # Here we're using the shared certificate authority from the primary
+    # datacenter that was exported via the federation secret.
+    caCert:
+      secretName: consul-federation
+      secretKey: caCert
+    caKey:
+      secretName: consul-federation
+      secretKey: caKey
+  acls:
+    manageSystemACLs: true
+    # Here we're importing the replication token that was
+    # exported from the primary via the federation secret.
+    replicationToken:
+      secretName: consul-federation
+      secretKey: replicationToken
+  federation:
+    enabled: true
+  gossipEncryption:
+    secretName: consul-federation
+    secretKey: gossipEncryptionKey
+connectInject:
+  enabled: true
+controller:
+  enabled: true
+meshGateway:
+  enabled: true
+  service:
+    enabled: true
+    type: LoadBalancer
+    annotations: |
+    networking.gke.io/load-balancer-type: "Internal"
+server:
+  # Here we're including the server config exported from the primary
+  # via the federation secret. This config includes the addresses of
+  # the primary datacenter's mesh gateways so Consul can begin federation.
+  replicas: ${server_replicas}
+  extraVolumes:
+    - type: secret
+      name: consul-federation
+      items:
+        - key: serverConfigJSON
+          path: config.json
+      load: true

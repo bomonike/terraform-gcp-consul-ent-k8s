@@ -9,12 +9,21 @@ terraform {
   required_version = ">= 1.2.1"
 
   required_providers {
-    google     = ">=2.0"
-    helm       = "2.5.0"
-    kubernetes = "2.10.0"
-    kubectl = {
-      source  = "gavinbunney/kubectl"
-      version = "1.14.0"
+    google = {
+      source = "hashicorp/google"
+      version = "~> 4.41"
+    }
+    google-beta = {
+      source = "hashicorp/google-beta"
+      version = "~> 4.41"
+    }
+    kubernetes = {
+      source = "hashicorp/kubernetes"
+      version = "~> 2.14"
+    }
+    helm = {
+      source = "hashicorp/helm"
+      version = "~> 2.7"
     }
   }
 }

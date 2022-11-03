@@ -1,10 +1,3 @@
-/**
- * Copyright © 2014-2022 HashiCorp, Inc.
- *
- * This Source Code is subject to the terms of the Mozilla Public License, v. 2.0. If a copy of the MPL was not distributed with this project, you can obtain one at http://mozilla.org/MPL/2.0/.
- *
- */
-
 resource "helm_release" "consul_primary" {
   count            = var.primary_datacenter ? 1 : 0
   chart            = var.chart_name
